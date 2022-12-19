@@ -5,6 +5,16 @@ const app = express();
 
 app.use(express.json());
 
+app.use((res, req, next) => {
+  console.log('Hello from the middleware!');
+  next(); // If we don't write this, we can't get response. Code will be stucked here
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString(); // ISOString nicely formatted at date
+  next();
+});
+
 const tours = JSON.parse(
   fs.readFileSync(
     `${__dirname}/dev-data/data/tours-simple.json`
@@ -13,8 +23,10 @@ const tours = JSON.parse(
 
 // GET all tours
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length, // When we are send multiple object, it make sense
     data: {
       tours, // ES6 enables us use this style <- tours: tours (same name)
