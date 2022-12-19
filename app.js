@@ -9,6 +9,8 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// GET
+// GET all tours
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -19,6 +21,29 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+// GET specific tour
+app.get('/api/v1/tours/:id', (req, res) => {
+  //console.log(req.params);
+  //const id = parseInt(req.params.id); Alternative solution for convert number
+  const id = req.params.id * 1; // Simple trick that JS string*number to convert number
+  const tour = tours.find((el) => el.id === id);
+
+  // if (id>tours.length) { ... } // Another very simple solution.
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
+// POST
 app.post('/api/v1/tours', (req, res) => {
   const newId = tours[tours.length - 1].id + 1; // Give manually id
   const newTour = Object.assign({ id: newId }, req.body); // Merge two object
