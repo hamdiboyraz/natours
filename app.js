@@ -46,7 +46,7 @@ app.get('/api/v1/tours/:id', (req, res) => {
 // PATCH
 app.patch('/api/v1/tours/:id', (req, res) => {
   const id = req.params.id * 1;
-  const tour = tours.find((tour) => tour.id === id);
+  const tour = tours.find((el) => el.id === id);
 
   if (!tour) {
     return res.status(404).json({
@@ -70,6 +70,31 @@ app.patch('/api/v1/tours/:id', (req, res) => {
         data: {
           tours: updatedTours,
         },
+      });
+    }
+  );
+});
+
+// DELETE
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invaild ID',
+    });
+  }
+
+  const updatedTours = tours.filter((el) => el.id !== tour.id);
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(updatedTours),
+    (err) => {
+      res.status(204).json({
+        status: 'success',
+        data: null,
       });
     }
   );
