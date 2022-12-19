@@ -26,6 +26,8 @@ const tours = JSON.parse(
 
 // 2 - ROUTE HANDLERS
 
+// TOUR RESOURCE
+
 // GET all tours
 const getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -140,6 +142,48 @@ const createTour = (req, res) => {
   );
 };
 
+// USER RESOURCE
+
+// GET all
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    messege: 'This route is not yet defined!',
+  });
+};
+
+// GET
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    messege: 'This route is not yet defined!',
+  });
+};
+
+// PATCH
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    messege: 'This route is not yet defined!',
+  });
+};
+
+// DELETE
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    messege: 'This route is not yet defined!',
+  });
+};
+
+// POST
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    messege: 'This route is not yet defined!',
+  });
+};
+
 // Instead of callback functions, create func with their specific names
 // in order to organize our codes.
 // app.get('/api/v1/tours', getAllTours);
@@ -151,6 +195,8 @@ const createTour = (req, res) => {
 // 3 - ROUTE
 
 // Above code is not enough when change routes, so we group functions based on same URL with using route method
+
+// TOUR ROUTES
 app
   .route('/api/v1/tours')
   .get(getAllTours)
@@ -161,6 +207,18 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// USER ROUTES
+app
+  .route('/api/v1/users')
+  .get(getAllUsers)
+  .post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // 4 - START SERVER
 
