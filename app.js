@@ -196,26 +196,49 @@ const createUser = (req, res) => {
 
 // Above code is not enough when change routes, so we group functions based on same URL with using route method
 
-// TOUR ROUTES
-app
-  .route('/api/v1/tours')
-  .get(getAllTours)
-  .post(createTour);
+// app
+//   .route('/api/v1/tours')
+//   .get(getAllTours)
+//   .post(createTour);
 
-app
-  .route('/api/v1/tours/:id')
+// app
+//   .route('/api/v1/tours/:id')
+//   .get(getTour)
+//   .patch(updateTour)
+//   .delete(deleteTour);
+
+// app
+//   .route('/api/v1/users')
+//   .get(getAllUsers)
+//   .post(createUser);
+
+// app
+//   .route('/api/v1/users/:id')
+//   .get(getUser)
+//   .patch(updateUser)
+//   .delete(deleteUser);
+
+// Again, intead of using above code, Create and Mount Route with express.Router()
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+// Mounting route
+// I'm not sure order of the code below
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+tourRouter.route('/').get(getAllTours).post(createTour);
+
+tourRouter
+  .route('/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
 
-// USER ROUTES
-app
-  .route('/api/v1/users')
-  .get(getAllUsers)
-  .post(createUser);
+userRouter.route('/').get(getAllUsers).post(createUser);
 
-app
-  .route('/api/v1/users/:id')
+userRouter
+  .route('/:id')
   .get(getUser)
   .patch(updateUser)
   .delete(deleteUser);
