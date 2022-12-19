@@ -1,9 +1,12 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
-app.use(express.json());
+// 1 - MIDDLEWARES
+app.use(morgan('dev'));
+app.use(express.json()); // Before this, we used to call body.parser
 
 app.use((res, req, next) => {
   console.log('Hello from the middleware!');
@@ -20,6 +23,8 @@ const tours = JSON.parse(
     `${__dirname}/dev-data/data/tours-simple.json`
   )
 );
+
+// 2 - ROUTE HANDLERS
 
 // GET all tours
 const getAllTours = (req, res) => {
@@ -143,6 +148,8 @@ const createTour = (req, res) => {
 // app.delete('/api/v1/tours/:id', deleteTour);
 // app.post('/api/v1/tours', createTour);
 
+// 3 - ROUTE
+
 // Above code is not enough when change routes, so we group functions based on same URL with using route method
 app
   .route('/api/v1/tours')
@@ -154,6 +161,8 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// 4 - START SERVER
 
 const port = 3000;
 app.listen(port, () => {
