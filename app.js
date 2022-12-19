@@ -43,6 +43,38 @@ app.get('/api/v1/tours/:id', (req, res) => {
   });
 });
 
+// PATCH
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  const tour = tours.find((tour) => tour.id === id);
+
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  const updatedTour = { ...tour, ...req.body };
+  //const updatedTour = Object.assign(tour, req.body);
+  const updatedTours = tours.map((el) =>
+    el.id === updatedTour.id ? updatedTour : el
+  );
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(updatedTours),
+    (err) => {
+      res.status(200).json({
+        status: 'success',
+        data: {
+          tours: updatedTours,
+        },
+      });
+    }
+  );
+});
+
 // POST
 app.post('/api/v1/tours', (req, res) => {
   const newId = tours[tours.length - 1].id + 1; // Give manually id
