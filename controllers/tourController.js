@@ -6,6 +6,19 @@ const tours = JSON.parse(
   )
 );
 
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is: ${val}`);
+  const id = val * 1;
+  const tour = tours.find((el) => el.id === id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
 // GET all tours
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -26,13 +39,6 @@ exports.getTour = (req, res) => {
   const id = req.params.id * 1; // Simple trick that JS string*number to convert number
   const tour = tours.find((el) => el.id === id);
 
-  // if (id>tours.length) { ... } // Another very simple solution.
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -45,13 +51,6 @@ exports.getTour = (req, res) => {
 exports.updateTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
 
   const updatedTour = { ...tour, ...req.body };
   //const updatedTour = Object.assign(tour, req.body);
@@ -77,13 +76,6 @@ exports.updateTour = (req, res) => {
 exports.deleteTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invaild ID',
-    });
-  }
 
   const updatedTours = tours.filter(
     (el) => el.id !== tour.id
