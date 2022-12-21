@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+
 dotenv.config({ path: './config.env' });
 
 // After configuration, we require app file
