@@ -25,7 +25,7 @@ mongoose
 
 // console.log(process.env.NODE_ENV);
 
-// Creating Mongo Scheme
+// Creating Mongo schema
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -42,8 +42,30 @@ const tourSchema = new mongoose.Schema({
   },
 });
 
-// Creating Mongo Model based on Mongo Scheme
-const Tour = mongoose.model('Tour', tourSchema); // Model names and vaiables start with Uppercase
+// Creating Mongo Model based on Mongo schema
+const Tour = mongoose.model('Tour', tourSchema); // Model names and variables start with Uppercase
+
+// testTour is an instance of our Tour model // Just like class
+// const testTour = new Tour({
+//   name: 'The Forest Hiker',
+//   rating: 4.5,
+//   price: 500,
+// });
+const testTour = new Tour({
+  name: 'The Park Camper',
+  price: 598,
+});
+
+// Save our instance to our DB using save() method
+// save() will return a promise so we can then consume.
+testTour
+  .save()
+  .then((doc) => {
+    console.log(doc);
+  })
+  .catch((err) => {
+    console.log('Error:', err);
+  });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
