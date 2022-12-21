@@ -1,31 +1,44 @@
 const Tour = require('./../models/tourModel');
 
 // GET all tours
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    // results: tours.length, // When we are send multiple object, it make sense
-    // data: {
-    //   tours, // ES6 enables us use this style <- tours: tours (same name)
-    // },
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
 // GET tour
-exports.getTour = (req, res) => {
-  //console.log(req.params);
-  //const id = parseInt(req.params.id); Alternative solution for convert number
-  const id = req.params.id * 1; // Simple trick that JS string*number to convert number
-  // const tour = tours.find((el) => el.id === id);
+exports.getTour = async (req, res) => {
+  try {
+    // Tour.findOne({ _id: req.params.id})
+    // findById runs like above
+    const tour = await Tour.findById(req.params.id);
 
-  res.status(200).json({
-    status: 'success',
-    // data: {
-    //   tour,
-    // },
-  });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
 // PATCH
