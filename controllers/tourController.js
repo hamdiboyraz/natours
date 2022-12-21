@@ -1,15 +1,5 @@
 const Tour = require('./../models/tourModel');
 
-exports.checkBody = (req, res, next) => {
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Missing name or pice',
-    });
-  }
-  next();
-};
-
 // GET all tours
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -84,20 +74,22 @@ exports.deleteTour = (req, res) => {
 };
 
 // POST
-exports.createTour = (req, res) => {
-  // const newId = tours[tours.length - 1].id + 1; // Give manually id
-  // const newTour = Object.assign({ id: newId }, req.body); // Merge two object
-  // tours.push(newTour); // Add our newTour to tours
-  // fs.writeFile(
-  //   `${__dirname}/dev-data/data/tours-simple.json`,
-  //   JSON.stringify(tours),
-  //   (err) => {
-  //     res.status(201).json({
-  //       status: 'success',
-  //       data: {
-  //         tour: newTour,
-  //       },
-  //     });
-  //   }
-  // );
+exports.createTour = async (req, res) => {
+  try {
+    // const newTour = new Tour({})
+    // newTour.save()
+    // instead of using above, we use mongoose.create() method.
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'Invalid data sent!',
+    });
+  }
 };
