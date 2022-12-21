@@ -42,28 +42,27 @@ exports.getTour = async (req, res) => {
 };
 
 // PATCH
-exports.updateTour = (req, res) => {
-  const id = req.params.id * 1;
-  // const tour = tours.find((el) => el.id === id);
-
-  // const updatedTour = { ...tour, ...req.body };
-  //const updatedTour = Object.assign(tour, req.body);
-  // const updatedTours = tours.map((el) =>
-  //   el.id === updatedTour.id ? updatedTour : el
-  // );
-
-  //   fs.writeFile(
-  //     `${__dirname}/dev-data/data/tours-simple.json`,
-  //     JSON.stringify(updatedTours),
-  //     (err) => {
-  //       res.status(200).json({
-  //         status: 'success',
-  //         data: {
-  //           tours: updatedTours,
-  //         },
-  //       });
-  //     }
-  //   );
+exports.updateTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true, //return the modified document rather than the original
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
 // DELETE
