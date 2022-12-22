@@ -3,8 +3,25 @@ const Tour = require('./../models/tourModel');
 // GET all tours
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // BUILD QUERY
+    const queryObj = { ...req.query }; // Object destructuring
+    const excludeFields = [
+      'page',
+      'sort',
+      'limit',
+      'fields',
+    ];
+    // extract excludeFields items from queryObj using foreach method and delete operator.
+    // We use foreach because we don't want to get a new array
+    excludeFields.forEach((el) => delete queryObj[el]);
 
+    //const tours = await Tour.find(queryObj);
+    // Tour.find() returns query
+    // instead of using above code, we make first query then await the query.
+    const query = Tour.find(queryObj);
+    // EXECUTE QUERY
+    const tours = await query;
+    // SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length,
