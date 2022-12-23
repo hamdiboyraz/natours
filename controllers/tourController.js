@@ -39,6 +39,7 @@ exports.getAllTours = async (req, res) => {
 // GET tour
 exports.getTour = async (req, res) => {
   try {
+    // console.log(req.params.id);
     // Tour.findOne({ _id: req.params.id})
     // findById runs like above
     const tour = await Tour.findById(req.params.id);
@@ -117,4 +118,39 @@ exports.createTour = async (req, res) => {
       message: 'Invalid data sent!',
     });
   }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      { $match: { ratingsAverage: { $gte: 4.6 } } },
+      {
+        $group: {
+          //_id: null,
+          //_id: '$ratingsAverage',
+          //_id: '$difficulty',
+          _id: { $toUpper: '$difficulty' },
+          numTours: { $sum: 1 },
+          numRating: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+      {
+        $match: { _id: { $ne: 'EASY' } },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {}
 };
