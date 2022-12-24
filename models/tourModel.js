@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 // Creating Mongo schema
 const tourSchema = new mongoose.Schema(
@@ -58,6 +59,7 @@ const tourSchema = new mongoose.Schema(
       select: false,
     },
     startDates: [Date],
+    slug: String,
   },
   {
     toJSON: { virtuals: true },
@@ -65,8 +67,32 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Virtual properties
+// These are not stored in DB
+// We should add 2nd parameter to our schema
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+// We can use more than one each hook
+// What is hook -> pre save hook  = middleware terminology
+
+tourSchema.pre('save', function (next) {
+  console.log(this);
+  next();
+});
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+tourSchema.pre('save', function (next) {
+  console.log('Will save document...');
+  next();
+});
+tourSchema.post('save', function (doc, next) {
+  console.log(doc);
+  next();
 });
 
 // Creating Mongo Model based on Mongo schema
