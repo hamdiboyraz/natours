@@ -66,6 +66,7 @@ exports.updateTour = async (req, res) => {
       req.body,
       {
         new: true, //return the modified document rather than the original
+        runValidators: true, // Validate the input data
       }
     );
     res.status(200).json({
@@ -115,7 +116,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent!',
+      message: err,
     });
   }
 };
