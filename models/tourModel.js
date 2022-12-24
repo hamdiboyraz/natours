@@ -126,6 +126,15 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
+tourSchema.pre('aggregate', function (next) {
+  console.log(this); // Here, this, aggregation object
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } },
+  });
+  console.log(this.pipeline());
+  next();
+});
+
 // Creating Mongo Model based on Mongo schema
 const Tour = mongoose.model('Tour', tourSchema); // Model names and variables start with Uppercase
 
