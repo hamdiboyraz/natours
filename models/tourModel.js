@@ -60,6 +60,10 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     slug: String,
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -79,7 +83,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 // What is hook -> pre save hook  = middleware terminology
 
 tourSchema.pre('save', function (next) {
-  console.log(this);
+  console.log(this); // Here this is refer to document(data)
   next();
 });
 tourSchema.pre('save', function (next) {
@@ -92,6 +96,33 @@ tourSchema.pre('save', function (next) {
 });
 tourSchema.post('save', function (doc, next) {
   console.log(doc);
+  next();
+});
+
+// QUERY MIDDLEWARE
+// tourSchema.pre('find', function (next) {
+//   this.find({ secretTour: { $ne: true } }); // Here this a query object so we can chain all methods that we have for queries
+//   next();
+// });
+
+// tourSchema.pre('findOne', function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
+
+// Solution for using find,findone and others start with find
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.timeStart = Date.now(); // Define a new variable
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(
+    `Query took ${Date.now() - this.timeStart} miliseconds!`
+  );
+  //console.log(docs);
   next();
 });
 
