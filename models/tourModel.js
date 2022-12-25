@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 // Creating Mongo schema
 const tourSchema = new mongoose.Schema(
@@ -9,14 +10,16 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'], // 2nd argument will show up in error
       unique: true,
       trim: true,
-      maxlength: [
-        40,
-        'A tour name must have less or equal then 40 characters',
-      ],
-      minlength: [
-        10,
-        'A tour name must have more or equal then 10 characters',
-      ],
+      maxlength: [40, 'A tour name must have less or equal then 40 characters'],
+      minlength: [10, 'A tour name must have more or equal then 10 characters'],
+      //validate: [validator.isAlpha, 'Tour name must only contain characters'], // This does not work with spaces
+      validate: {
+        validator: function (value) {
+          return validator.isAlpha(value.split(' ').join(''));
+          // return validator.isAlpha(value.split(' ').join(''), 'tr-TR');
+        },
+        message: 'Tour name must only contain characters.',
+      },
     },
     duration: {
       type: Number,
@@ -30,9 +33,8 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a difficulty'],
       enum: {
-        values: ['easy, medium, difficult'],
-        message:
-          'Difficulty is either: easy, medium, difficulty',
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either: easy, medium, difficult',
       },
     },
     ratingsAverage: {
@@ -53,7 +55,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // "this" only points to current doc on NEW document creation, so we cannot use on update
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below regular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
@@ -134,9 +145,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(
-    `Query took ${Date.now() - this.timeStart} miliseconds!`
-  );
+  console.log(`Query took ${Date.now() - this.timeStart} miliseconds!`);
   //console.log(docs);
   next();
 });
