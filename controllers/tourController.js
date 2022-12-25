@@ -1,6 +1,7 @@
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -36,6 +37,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
   // findById runs like above
   const tour = await Tour.findById(req.params.id);
 
+  // null is a falsy value in JS, so when query returns null, code below will run.
+  // tour->null->falsy --> !tour=true
+  if (!tour) {
+    // If we don't use return, code will continue and send response again.(2 times response)
+    return next(new AppError('No tour found with that ID', 404)); // where this code headed?
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -50,6 +57,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     new: true, //return the modified document rather than the original
     runValidators: true, // Validate the input data
   });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404)); // where this code headed?
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -60,7 +72,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
 // DELETE
 exports.deleteTour = catchAsync(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404)); // where this code headed?
+  }
 
   res.status(204).json({
     status: 'success',
