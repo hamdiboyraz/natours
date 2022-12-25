@@ -1,4 +1,13 @@
+const AppError = require('./../utils/appError');
+
+const handleCastErrorDB = (err, res) => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
+  console.log(err);
+
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
@@ -33,7 +42,15 @@ module.exports = (err, req, res, next) => {
 
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === 'development') {
-    sendErrorProd(err, res);
+  } else if (process.env.NODE_ENV === 'production') {
+    // in order to distinguish coming from expres err we use error, that means,
+    // instead of override, we make hard copy of err
+    // let error = {...err} // This is not gonna work, because when we are destructure,
+    // we just coppy err object's own methods and properties not prototype's
+    let error = Object.create(err);
+
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
+
+    sendErrorProd(error, res);
   }
 };
