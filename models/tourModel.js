@@ -15,7 +15,8 @@ const tourSchema = new mongoose.Schema(
       //validate: [validator.isAlpha, 'Tour name must only contain characters'], // This does not work with spaces
       validate: {
         validator: function (value) {
-          return validator.isAlpha(value.split(' ').join(''));
+          //return validator.isAlpha(value.split(' ').join(''));
+          return validator.isAlpha(value.replace(/ /g, ''));
           // return validator.isAlpha(value.split(' ').join(''), 'tr-TR');
         },
         message: 'Tour name must only contain characters.',

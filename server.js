@@ -11,6 +11,7 @@ const DB = process.env.DB_URI.replace(
   process.env.DATABASE_PASSWORD
 );
 
+mongoose.set('strictQuery', false); // in order to remove Deprecationwarning about strictQuery
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
