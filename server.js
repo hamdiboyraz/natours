@@ -1,6 +1,13 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
+// Global Uncaught Exceptions
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! Server Shutting Down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 dotenv.config({ path: './config.env' });
 
 // After configuration, we require app file
@@ -33,7 +40,7 @@ const server = app.listen(port, () => {
 
 // Global Unhandled Rejections
 process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION! Shutting down...');
+  console.log('UNHANDLED REJECTION! Server Shutting Down...');
   console.log(err.name, err.message);
   server.close(() => {
     // If we use direct process.exit-> it will sudden close that means
