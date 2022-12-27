@@ -7,6 +7,7 @@ const router = express.Router();
 // Base route: /api/v1/users
 
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 router
   .route('/')

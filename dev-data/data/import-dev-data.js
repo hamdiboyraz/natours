@@ -2,6 +2,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Tour = require('./../../models/tourModel');
+const User = require('./../../models/userModel');
 
 dotenv.config({ path: `${__dirname}/../../config.env` });
 
@@ -41,8 +42,13 @@ const importData = async () => {
 // DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
-    await Tour.deleteMany();
-    console.log('Data successfully deleted!');
+    if (process.argv[3] === '--tours') {
+      await Tour.deleteMany();
+      console.log('Data successfully deleted!');
+    } else if (process.argv[3] === '--users') {
+      await User.deleteMany();
+      console.log('Data successfully deleted!');
+    }
   } catch (err) {
     console.log(err);
   }
