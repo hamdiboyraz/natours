@@ -48,6 +48,10 @@ userSchema.pre('save', async function (next) {
   // We only want to hash the password if it has been modified (or is new)
   if (!this.isModified('password')) return next();
 
+  // We want to update the passwordChangedAt field when the user changes the password
+  // or when the user creates a new account
+  this.passwordChangedAt = Date.now() - 1000;
+
   // We set our password to the hashed password (encrypted version of the original password),
   // so we don't save the plain text password
   // We only want to hash the password if it has been modified (or is new)
@@ -61,14 +65,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// We want to update the passwordChangedAt field when the user changes the password
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
-
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
-
 userSchema.methods.checkPassword = async function (inputPassword) {
   // inputPassword is the password that user typed in
   // this.password is the password that is stored in the database
@@ -77,17 +73,11 @@ userSchema.methods.checkPassword = async function (inputPassword) {
 };
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.passwordChangedAt) {
-    const pwChangedTimestamp = this.passwordChangedAt.getTime() / 1000;
+  const lastPasswordChanged = this.passwordChangedAt.getTime() / 1000;
 
-    // True means changed after the token was issued (JWTTimestamp)
-    return pwChangedTimestamp > JWTTimestamp;
-  }
-
-  // False means NOT changed
-  // If the passwordChangedAt field is not set, it means the password has never been changed
-  // So we return false
-  return false;
+  // True means changed after the token was issued (JWTTimestamp)
+  // False means not changed
+  return lastPasswordChanged > JWTTimestamp;
 };
 
 userSchema.methods.createPasswordResetToken = function () {
