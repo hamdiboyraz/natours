@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date, // This is the time when the token expires
 });
 
+// We want to hash the password before saving the user to the database
 userSchema.pre('save', async function (next) {
   // We only want to hash the password if it has been modified (or is new)
   if (!this.isModified('password')) return next();
@@ -57,6 +58,14 @@ userSchema.pre('save', async function (next) {
   // We delete passwordConfirm field from the database
   // We don't need it anymore, we just use it to validate the password
   this.passwordConfirm = undefined;
+  next();
+});
+
+// We want to update the passwordChangedAt field when the user changes the password
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
