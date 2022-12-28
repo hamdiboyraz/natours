@@ -85,7 +85,7 @@ userSchema.methods.createPasswordResetToken = function () {
   // We create a random string
   const resetToken = crypto.randomBytes(32).toString('hex');
   // this will print out a random string like this:
-  //
+  // 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed
 
   // We encrypt the random string
   // We will save the encrypted version of the random string to the database
@@ -96,8 +96,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   // We set the expiration time to 10 minutes
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes from now (in milliseconds)
-
-  console.log(resetToken, this.passwordResetToken);
 
   return resetToken;
 };
