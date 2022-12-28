@@ -22,6 +22,7 @@ app.use((res, req, next) => {
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString(); // ISOString nicely formatted at date
+  // console.log(req.headers);
   next();
 });
 
