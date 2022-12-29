@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String, // This is the token that we send to the user's email
   passwordResetExpires: Date, // This is the time when the token expires
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // We want to hash the password before saving the user to the database
@@ -62,6 +67,12 @@ userSchema.pre('save', async function (next) {
   // We delete passwordConfirm field from the database
   // We don't need it anymore, we just use it to validate the password
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // This points to the current query
+  this.find({ active: { $ne: false } }); // { active: true } just brings active true, if
   next();
 });
 
