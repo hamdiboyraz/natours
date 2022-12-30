@@ -91,10 +91,37 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON - Special type of data that we can use in MongoDB - Nested schema type
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number], // [longitude, latitude] - Array of numbers - Counterintuitive, generally we write latitude first
+      address: String,
+      description: String,
+    },
+    locations: [
+      // Array of objects. This is a subdocument/embedded document
+      // We can use this type of data for storing data that is related to each other
+      // To create a subdocument we should use an array and inside of it we should define an object
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: true }, // This will show virtual properties in output
+    toObject: { virtuals: true }, // This will show virtual properties in output
   }
 );
 
