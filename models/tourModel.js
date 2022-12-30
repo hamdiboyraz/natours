@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 // Creating Mongo schema
 const tourSchema = new mongoose.Schema(
@@ -118,6 +119,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: { virtuals: true }, // This will show virtual properties in output
@@ -136,22 +138,32 @@ tourSchema.virtual('durationWeeks').get(function () {
 // We can use more than one each hook
 // What is hook -> pre save hook  = middleware terminology
 
-tourSchema.pre('save', function (next) {
-  console.log(this); // Here this is refer to document(data)
-  next();
-});
+// tourSchema.pre('save', function (next) {
+//   console.log(this); // Here this is refer to document(data)
+//   next();
+// });
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-tourSchema.pre('save', function (next) {
-  console.log('Will save document...');
+
+// Embedding users into tours
+tourSchema.pre('save', async function (next) {
+  // User.findByID returns a query, so map will return an array of queries and queries act like promises
+  // so we need to use Promise.all to wait for all promises to be resolved
+  const guidesPromises = this.guides.map((id) => User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
   next();
 });
-tourSchema.post('save', function (doc, next) {
-  console.log(doc);
-  next();
-});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save document...');
+//   next();
+// });
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
 
 // QUERY MIDDLEWARE
 // tourSchema.pre('find', function (next) {
