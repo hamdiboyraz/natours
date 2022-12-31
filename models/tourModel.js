@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
-const User = require('./userModel');
+//const User = require('./userModel');
 
 // Creating Mongo schema
 const tourSchema = new mongoose.Schema(
@@ -119,7 +119,14 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    // guides: Array, -> in order to embedding
+    guides: [
+      // in order to referencing
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true }, // This will show virtual properties in output
@@ -148,13 +155,13 @@ tourSchema.pre('save', function (next) {
 });
 
 // Embedding users into tours
-tourSchema.pre('save', async function (next) {
-  // User.findByID returns a query, so map will return an array of queries and queries act like promises
-  // so we need to use Promise.all to wait for all promises to be resolved
-  const guidesPromises = this.guides.map((id) => User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
-  next();
-});
+// tourSchema.pre('save', async function (next) {
+//   // User.findByID returns a query, so map will return an array of queries and queries act like promises
+//   // so we need to use Promise.all to wait for all promises to be resolved
+//   const guidesPromises = this.guides.map((id) => User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 // tourSchema.pre('save', function (next) {
 //   console.log('Will save document...');
