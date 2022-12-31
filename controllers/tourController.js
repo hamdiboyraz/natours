@@ -35,7 +35,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
   // console.log(req.params.id);
   // Tour.findOne({ _id: req.params.id})
   // findById runs like above
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
 
   // null is a falsy value in JS, so when query returns null, code below will run.
   // tour->null->falsy --> !tour=true

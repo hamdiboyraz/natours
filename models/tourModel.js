@@ -141,6 +141,15 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate
+// This is not a real field in DB, it is a virtual field
+// We can use this field to populate data from other collection
+tourSchema.virtual('reviews', {
+  ref: 'Review', // This is the model name
+  foreignField: 'tour', // This is the field in Review model
+  localField: '_id', // This is the field in Tour model
+});
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 // We can use more than one each hook
 // What is hook -> pre save hook  = middleware terminology
