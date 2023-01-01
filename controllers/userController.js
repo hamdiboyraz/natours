@@ -1,6 +1,7 @@
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const factory = require('./handlerFactory');
 
 // We basically want to filter out the fields that are not allowed to be updated
 // Create new object with only the allowed fields with the same values as the original object
@@ -82,12 +83,7 @@ exports.updateUser = (req, res) => {
 };
 
 // DELETE
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    messege: 'This route is not yet defined!',
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
 
 // POST
 exports.createUser = (req, res) => {
