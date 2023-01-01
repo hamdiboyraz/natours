@@ -53,23 +53,24 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 // PATCH
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, //return the modified document rather than the original
-    runValidators: true, // Validate the input data
-  });
+// exports.updateTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true, //return the modified document rather than the original
+//     runValidators: true, // Validate the input data
+//   });
 
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404)); // where this code headed?
-  }
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404)); // where this code headed?
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour,
+//     },
+//   });
+// });
+exports.updateTour = factory.updateOne(Tour);
 
 // DELETE
 // exports.deleteTour = catchAsync(async (req, res, next) => {
@@ -87,18 +88,19 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 exports.deleteTour = factory.deleteOne(Tour);
 
 // POST
-exports.createTour = catchAsync(async (req, res, next) => {
-  // const newTour = new Tour({})
-  // newTour.save()
-  // instead of using above, we use mongoose.create() method.
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+// exports.createTour = catchAsync(async (req, res, next) => {
+//   // const newTour = new Tour({})
+//   // newTour.save()
+//   // instead of using above, we use mongoose.create() method.
+//   const newTour = await Tour.create(req.body);
+//   res.status(201).json({
+//     status: 'success',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
+exports.createTour = factory.createOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
