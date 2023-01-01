@@ -46,6 +46,9 @@ class APIFeatures {
     // 3- Field Limiting
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
+      if (fields.includes('password'))
+        throw new Error('Invalid fields selected');
+
       this.query = this.query.select(fields);
       //query.select(fields);
     } else {
