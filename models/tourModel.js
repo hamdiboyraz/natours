@@ -222,8 +222,14 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-tourSchema.pre('aggregate', function (docs, next) {
-  console.log(this); // Here, this, aggregation object
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  //console.log(this); // Here, this, aggregation object
+  //console.log(this.pipeline()[0].$geoNear);
+  if (this.pipeline()[0].$geoNear) {
+    //  also we can write like this '$geoNear' in this.pipeline()[0]
+    return next();
+  }
   this.pipeline().unshift({
     $match: { secretTour: { $ne: true } },
   });
