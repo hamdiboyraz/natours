@@ -134,6 +134,12 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Indexing
+// We can create indexes for fields that we use frequently in our queries
+// We can create compound indexes
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // 1 = ascending, -1 = descending
+tourSchema.index({ slug: 1 });
+
 // Virtual properties
 // These are not stored in DB
 // We should add 2nd parameter to our schema
