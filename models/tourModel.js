@@ -140,6 +140,7 @@ const tourSchema = new mongoose.Schema(
 // We can create compound indexes
 tourSchema.index({ price: 1, ratingsAverage: -1 }); // 1 = ascending, -1 = descending
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' }); // 2dsphere is a special index type for geospatial data
 
 // Virtual properties
 // These are not stored in DB
