@@ -220,7 +220,7 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-tourSchema.pre('aggregate', function (next) {
+tourSchema.pre('aggregate', function (docs, next) {
   console.log(this); // Here, this, aggregation object
   this.pipeline().unshift({
     $match: { secretTour: { $ne: true } },

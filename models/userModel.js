@@ -84,11 +84,14 @@ userSchema.methods.checkPassword = async function (inputPassword) {
 };
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  const lastPasswordChanged = this.passwordChangedAt.getTime() / 1000;
+  if (this.passwordChangedAt) {
+    const lastPasswordChanged = this.passwordChangedAt.getTime() / 1000;
 
-  // True means changed after the token was issued (JWTTimestamp)
-  // False means not changed
-  return lastPasswordChanged > JWTTimestamp;
+    return JWTTimestamp < lastPasswordChanged;
+  }
+
+  // False means NOT changed
+  return false;
 };
 
 userSchema.methods.createPasswordResetToken = function () {
