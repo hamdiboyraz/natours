@@ -28,6 +28,7 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "ndb": "^1.1.5"
+    "ndb": "^1.1.5",
+    "prettier": "^2.8.1"
   }
 }
