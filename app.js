@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const path = require('path');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -13,6 +14,13 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
+
+// Set pug as template engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+// Serving static files
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(`${__dirname}/public`));
 
 // 1 - GLOBAL MIDDLEWARES
 
@@ -56,9 +64,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString(); // ISOString nicely formatted at date
@@ -68,6 +73,9 @@ app.use((req, res, next) => {
 
 // 3 - ROUTE
 // Mounting routes
+app.use('/', (req, res) => {
+  res.status(200).render('base');
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
