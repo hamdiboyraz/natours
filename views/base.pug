@@ -1,6 +1,7 @@
 doctype html
 html 
   |
+  |
   head
     block head
       meta(charset='UTF-8')
@@ -21,3 +22,9 @@ html
 
     // FOOTER
     include _footer
+
+    // SCRIPTS
+    script(
+      src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js'
+    )
+    script(src='/js/login.js')
