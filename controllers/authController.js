@@ -127,6 +127,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Grant access to protected route
   req.user = currentUser;
+  res.locals.user = currentUser;
   //console.log(req.user);
   next();
 });
@@ -261,7 +262,7 @@ exports.isLoggedIn = async (req, res, next) => {
       }
 
       // There is a logged in user
-      res.locals.user = currentUser;
+      res.locals.user = currentUser; // res.locals is available in all templates
       return next();
     } catch (err) {
       return next();

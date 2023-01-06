@@ -30,7 +30,7 @@ const logout = async () => {
     });
 
     // this true is to force the page to reload from the server, otherwise load same page from cache
-    if ((res.data.status = 'success')) location.reload(true);
+    if ((res.data.status = 'success')) location.assign('/');
   } catch (err) {
     showAlert('error', 'Error logging out! Try again.');
   }
