@@ -4,6 +4,8 @@ const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
+// Base route: /
+
 router.use(authController.isLoggedIn);
 
 router.get('/', viewController.getOverview);
