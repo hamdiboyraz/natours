@@ -1,7 +1,39 @@
+const multer = require('multer');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
+
+// Specify the destination and filename for the uploaded file
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    // user-userId-timestamp.jpeg
+    // user-5e8f4cb0b0b-20200420.jpeg
+    const ext = file.mimetype.split('/')[1]; // jpeg
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+// Filter out files that are not images
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+// Multer middleware to handle file uploads
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// Upload a single file with the name 'photo'
+exports.uploadUserPhoto = upload.single('photo');
 
 // We basically want to filter out the fields that are not allowed to be updated
 // Create new object with only the allowed fields with the same values as the original object
