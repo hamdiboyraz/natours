@@ -1,21 +1,25 @@
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 
 // Specify the destination and filename for the uploaded file
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    // user-userId-timestamp.jpeg
-    // user-5e8f4cb0b0b-20200420.jpeg
-    const ext = file.mimetype.split('/')[1]; // jpeg
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     // user-userId-timestamp.jpeg
+//     // user-5e8f4cb0b0b-20200420.jpeg
+//     const ext = file.mimetype.split('/')[1]; // jpeg
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+// Store the file in memory instead of disk as a buffer
+const multerStorage = multer.memoryStorage();
 
 // Filter out files that are not images
 const multerFilter = (req, file, cb) => {
@@ -34,6 +38,20 @@ const upload = multer({
 
 // Upload a single file with the name 'photo'
 exports.uploadUserPhoto = upload.single('photo');
+
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+};
 
 // We basically want to filter out the fields that are not allowed to be updated
 // Create new object with only the allowed fields with the same values as the original object
