@@ -1,3 +1,4 @@
+const fs = require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
 const User = require('./../models/userModel');
@@ -53,6 +54,15 @@ exports.resizeUserPhoto = (req, res, next) => {
   next();
 };
 
+// Delete the previous photo from the server
+const deletePhotoFromServer = async (photo) => {
+  const path = `${__dirname}/../public/img/users/${photo}`;
+  await fs.unlink(path, (err) => {
+    if (err) return console.log(err);
+    console.log('Previous photo has been deleted');
+  });
+};
+
 // We basically want to filter out the fields that are not allowed to be updated
 // Create new object with only the allowed fields with the same values as the original object
 // And return the new object
@@ -82,7 +92,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated such as role
   const filteredBody = filterObj(req.body, 'name', 'email');
-  if (req.file) filteredBody.photo = req.file.filename;
+  if (req.file) {
+    filteredBody.photo = req.file.filename;
+    await deletePhotoFromServer(req.user.photo); // Delete previous photo from server
+  }
 
   // 3) update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
