@@ -1,6 +1,82 @@
+const fs = require('fs');
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
+
+// Store the file in memory instead of disk as a buffer
+const multerStorage = multer.memoryStorage();
+
+// Filter out files that are not images
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+// Multer middleware to handle file uploads
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// Upload different files with different names
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+// upload.single('image') req.file
+// upload.array('images', 5) req.files
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // console.log(req.files);
+
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // Delete existing images from the server
+  const tour = await Tour.findById(req.params.id);
+  if (
+    tour.images.length > 0 &&
+    fs.existsSync(`public/img/tours/${tour.images[0]}`)
+  ) {
+    tour.images.forEach((image) => {
+      fs.unlinkSync(`public/img/tours/${image}`);
+    });
+  }
+  if (tour.imageCover && fs.existsSync(`public/img/tours/${tour.imageCover}`)) {
+    fs.unlinkSync(`public/img/tours/${tour.imageCover}`);
+  }
+
+  // 1) Cover image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2) Images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+      req.body.images.push(filename);
+    })
+  );
+  console.log(req.body);
+
+  next();
+});
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
