@@ -1,3 +1,4 @@
 /node_modules
 config.env
 /public/js/mapbox_token.js
+/public/js/stripe_token.js
