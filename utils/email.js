@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+//const sendinBlue = require('nodemailer-sendinblue-transport');
 const pug = require('pug');
 const { htmlToText } = require('html-to-text');
 
@@ -9,17 +10,17 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Hamdi <${process.env.EMAIL_FROM}>`;
+    this.from = `Jonas <${process.env.EMAIL_FROM}>`;
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // Sendgrid
+      // Outlook
       return nodemailer.createTransport({
-        service: 'SendGrid',
+        service: 'hotmail',
         auth: {
-          user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD,
+          user: process.env.OUTLOOK_USERNAME,
+          pass: process.env.OUTLOOK_PASSWORD,
         },
       });
     }
