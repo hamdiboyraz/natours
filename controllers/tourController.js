@@ -73,7 +73,7 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
       req.body.images.push(filename);
     })
   );
-  console.log(req.body);
+  //console.log(req.body);
 
   next();
 });
@@ -169,7 +169,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const [lat, lng] = latlng.split(',');
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
 
-  console.log(distance, lat, lng, unit);
+  //console.log(distance, lat, lng, unit);
   if (!lat || !lng) {
     next(
       new AppError(
