@@ -1,7 +1,8 @@
-import stripe_token from './stripe_token.js';
 import { showAlert } from './alert.js';
 
-const stripe = Stripe(stripe_token);
+const stripe = Stripe(
+  'pk_test_51MOJENHydBxLawkIkaylVR8saKVE5h1kyJ7eKur8rvWkHfaDmkkdyOBPAzZJyp1m9rJuWDrU7PisCLLphRAWvAke00qLyPYd7V'
+);
 
 export const bookTour = async (tourID) => {
   try {

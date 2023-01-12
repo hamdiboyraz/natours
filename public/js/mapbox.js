@@ -1,6 +1,7 @@
 import 'https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js';
 
-import token from './mapbox_token.js';
+const token =
+  'pk.eyJ1IjoiZGV2bmV3IiwiYSI6ImNsY2hscmJiMTAwZHEzcG10eTQyZWh5ZGUifQ.Q40KWuTaIJIpvMb7fCcLBw';
 
 const displayMap = (locations) => {
   // Display map on page with mapbox
